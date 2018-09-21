@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "defines": [
+                "__CC_ARM",
+                "USE_HAL_DRIVER",
+                "STM32F103xB"
+            ],
+            "includePath": [
+                "D:/WindowsApps/Keil_v5/ARM/ARMCC/include",
+                "${workspaceRoot}/**",
+                "${workspaceRoot}/Inc",
+                "${workspaceRoot}/Drivers/STM32F1xx_HAL_Driver/Inc",
+                "${workspaceRoot}/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy",
+                "${workspaceRoot}/Drivers/CMSIS/Device/ST/STM32F1xx/Include",
+                "${workspaceRoot}/Drivers/CMSIS/Include",
+                "${workspaceRoot}/Drivers/BSP/Inc",
+                "${workspaceRoot}/Net/Device/Inc",
+                "${workspaceRoot}/Net/MQTT",
+                "${workspaceRoot}/Net/OneNet/Inc"
+            ],
+            "name": "Win32",
+            "intelliSenseMode": "msvc-x64"
+        }
+    ],
+    "version": 4
+}

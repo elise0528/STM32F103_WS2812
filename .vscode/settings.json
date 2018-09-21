@@ -1,0 +1,19 @@
+{
+    "files.associations": {
+        "bsp_ws2812.h": "c",
+        "ws28.h": "c",
+        "mqttkit.h": "c",
+        "usart.h": "c",
+        "string.h": "c",
+        "stm32f1xx_hal_uart.h": "c",
+        "stm32f1xx_hal.h": "c",
+        "memory": "c",
+        "streambuf": "c",
+        "xmemory0": "c",
+        "xstring": "c",
+        "xutility": "c",
+        "string": "c",
+        "stdbool.h": "c",
+        "xlocale": "c"
+    }
+}
