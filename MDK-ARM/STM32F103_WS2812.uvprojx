@@ -336,7 +336,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;             ../Drivers/STM32F1xx_HAL_Driver/Inc;             ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;             ../Drivers/CMSIS/Device/ST/STM32F1xx/Include;             ../Drivers/CMSIS/Include;             ../Drivers/BSP/Inc;             ../Net/Device/Inc;             ../Net/MQTT;             ../Net/OneNet/Inc</IncludePath>
+              <IncludePath>../Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Drivers/BSP/Inc;../Net/MQTT;../Net/OneNet/Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -534,9 +534,6 @@
               <FilePath>..\Net\MQTT\MqttKit.c</FilePath>
             </File>
           </Files>
-        </Group>
-        <Group>
-          <GroupName>Net/Device</GroupName>
         </Group>
         <Group>
           <GroupName>::CMSIS</GroupName>
