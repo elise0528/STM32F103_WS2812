@@ -46,6 +46,7 @@
 #include "WS28.h"
 #include "bsp_debug_usart.h"
 #include "bsp_esp8266.h"
+#include "bsp_key.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -58,7 +59,6 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 uint16_t cnt = 0;
-char debug_buf[256];
 char str[256];
 extern __IO uint8_t ucTcpClosedFlag;
 uint8_t ucStatus;
@@ -116,7 +116,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  ESP8266_SmartConfig();
+  HAL_UART_Receive_IT(&husartx_esp8266, &esp8266_rxdata, 1);
   // printf("正在配置 ESP8266 ......\n" );
 
   // if(ESP8266_AT_Test())
@@ -146,6 +146,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    if (ucSmartConfigFlag)
+    {
+      printf("ucSmartConfigFlag = 1");
+      ESP8266_SmartConfig();
+      ucSmartConfigFlag = 0;
+    }
     //HAL_UART_Transmit_DMA(&huart1, UsartTxBuf, sizeof(UsartTxBuf)-1);
     //    HAL_Delay(100);
     //    UsartPrintf(USART1, "%d:Start colorWipe...\r\n", ++cnt);
@@ -160,9 +166,9 @@ int main(void)
     //      memset(esp8266_buf, 0, sizeof(esp8266_buf)); //清空缓存区
     //    }
     //    Sw28_AllBlock(&hsw28);
-    HAL_Delay(500);
+    
+    HAL_Delay(1000);
     sprintf(str, "%d:usart_debug_test...\r\n", ++cnt);
-    // ESP8266_SendString(ENABLE,str,0,Single_ID_0);               //发送数据
     printf("%s", str);
 
     // HAL_Delay(1000);
@@ -182,8 +188,8 @@ int main(void)
     // 	while(!ESP8266_UnvarnishSend());
     // }
 
-    scanf("%s", str);
-    ESP8266_Cmd(str, "OK", NULL, 2500);
+    //scanf("%s", str);
+    //ESP8266_Cmd(str, "OK", NULL, 2500);
 
     //    //UsartPrintf(USART1, "%d:Start theaterChase...\r\n", ++cnt);
     //    theaterChase(&hsw28, YELLOW, 100);
@@ -201,11 +207,12 @@ int main(void)
     // HAL_Delay(500);
     // theaterChaseRainbow(&hsw28, 100);
 
-    /* USER CODE END WHILE */
+  /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+  /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
+
 }
 
 /**
@@ -218,7 +225,7 @@ void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
 
-  /**Initializes the CPU, AHB and APB busses clocks 
+    /**Initializes the CPU, AHB and APB busses clocks 
     */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
@@ -231,9 +238,10 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  /**Initializes the CPU, AHB and APB busses clocks 
+    /**Initializes the CPU, AHB and APB busses clocks 
     */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -244,11 +252,11 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  /**Configure the Systick interrupt time 
+    /**Configure the Systick interrupt time 
     */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000);
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
-  /**Configure the Systick 
+    /**Configure the Systick 
     */
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
@@ -277,6 +285,7 @@ static void MX_SPI1_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
+
 }
 
 /* USART1 init function */
@@ -295,6 +304,7 @@ static void MX_USART1_UART_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
+
 }
 
 /* USART2 init function */
@@ -313,13 +323,13 @@ static void MX_USART2_UART_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-  HAL_UART_Receive_IT(&husartx_esp8266, &esp8266_rxdata, 1);
+
 }
 
 /** 
   * Enable DMA controller clock
   */
-static void MX_DMA_Init(void)
+static void MX_DMA_Init(void) 
 {
   /* DMA controller clock enable */
   __HAL_RCC_DMA1_CLK_ENABLE();
@@ -328,6 +338,7 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel3_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel3_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel3_IRQn);
+
 }
 
 /** Configure pins as 
@@ -350,11 +361,11 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pin : KEY_Pin */
-  GPIO_InitStruct.Pin = KEY_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(KEY_GPIO_Port, &GPIO_InitStruct);
+  /*Configure GPIO pin : PB3 */
+  GPIO_InitStruct.Pin = GPIO_PIN_3;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LED2_Pin */
   GPIO_InitStruct.Pin = LED2_Pin;
@@ -366,6 +377,7 @@ static void MX_GPIO_Init(void)
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+
 }
 
 /* USER CODE BEGIN 4 */
@@ -381,24 +393,36 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   /* Prevent unused argument(s) compilation warning */
   if (huart->Instance == USART2)
   {
-
     if (strEsp8266_Frame_Record.InfBit.FrameLength < (RX_BUF_MAX_LEN - 1)) //预留1个字节写结束符
     {
-      // if (!ucSmartConfigStartFlag)
-      // {
-        strEsp8266_Frame_Record.Data_RX_BUF[strEsp8266_Frame_Record.InfBit.FrameLength++] = esp8266_rxdata;
-      // }
-      // else
-      // {
-      //   HAL_UART_Transmit_IT(&husart_debug, &esp8266_rxdata, 1);
-      // }
+      strEsp8266_Frame_Record.Data_RX_BUF[strEsp8266_Frame_Record.InfBit.FrameLength++] = esp8266_rxdata;
     }
-
     HAL_UART_Receive_IT(&husartx_esp8266, &esp8266_rxdata, 1);
   }
-
   /* NOTE: This function Should not be modified, when the callback is needed,
            the HAL_UART_RxCpltCallback could be implemented in the user file
+   */
+}
+
+/**
+  * @brief  EXTI line detection callbacks.
+  * @param  GPIO_Pin: Specifies the pins connected EXTI line
+  * @retval None
+  */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  /* Prevent unused argument(s) compilation warning */
+  if (GPIO_Pin == KEY_GPIO_PIN)
+  {
+
+    //HAL_Delay(10); //延时一小段时间，消除抖动
+    if (HAL_GPIO_ReadPin(KEY_GPIO, KEY_GPIO_PIN) == KEY_DOWN_LEVEL)
+    {
+      ucSmartConfigFlag = 1;
+    }
+  }
+  /* NOTE: This function Should not be modified, when the callback is needed,
+           the HAL_GPIO_EXTI_Callback could be implemented in the user file
    */
 }
 
@@ -420,7 +444,7 @@ void _Error_Handler(char *file, int line)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
+#ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -428,8 +452,8 @@ void _Error_Handler(char *file, int line)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(uint8_t *file, uint32_t line)
-{
+void assert_failed(uint8_t* file, uint32_t line)
+{ 
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */

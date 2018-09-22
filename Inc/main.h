@@ -49,9 +49,6 @@
 
 /* Private define ------------------------------------------------------------*/
 
-#define KEY_Pin GPIO_PIN_3
-#define KEY_GPIO_Port GPIOB
-#define KEY_EXTI_IRQn EXTI3_IRQn
 #define LED2_Pin GPIO_PIN_6
 #define LED2_GPIO_Port GPIOB
 

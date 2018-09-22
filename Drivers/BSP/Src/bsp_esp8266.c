@@ -12,9 +12,37 @@ UART_HandleTypeDef husartx_esp8266;
 
 STRUCT_USARTx_Frame strEsp8266_Frame_Record = {0};
 uint8_t esp8266_rxdata;
-uint8_t ucSmartConfigStartFlag = 0;
+uint8_t ucSmartConfigFlag = 0;
 /* 扩展变量 ------------------------------------------------------------------*/
 /* 私有函数原形 --------------------------------------------------------------*/
+
+/**
+ * 注意用STM32Cubemx生成初始化工程后 
+ * 1.在mina.c中添加 HAL_UART_RxCpltCallback回调函数
+ * 2.在main主函数中添加 HAL_UART_Receive_IT函数 开启接收中断
+*/
+/**
+  * @brief  Rx Transfer completed callbacks.
+  * @param  huart: pointer to a UART_HandleTypeDef structure that contains
+  *                the configuration information for the specified UART module.
+  * @retval None
+  */
+// void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+// {
+//   /* Prevent unused argument(s) compilation warning */
+//   if (huart->Instance == USART2)
+//   {
+//     if (strEsp8266_Frame_Record.InfBit.FrameLength < (RX_BUF_MAX_LEN - 1)) //预留1个字节写结束符
+//     {
+//       strEsp8266_Frame_Record.Data_RX_BUF[strEsp8266_Frame_Record.InfBit.FrameLength++] = esp8266_rxdata;
+//     }
+//     HAL_UART_Receive_IT(&husartx_esp8266, &esp8266_rxdata, 1);
+//   }
+//   /* NOTE: This function Should not be modified, when the callback is needed,
+//            the HAL_UART_RxCpltCallback could be implemented in the user file
+//    */
+// }
+
 
 #ifndef STM32_CUBEMX
 /* 函数体 --------------------------------------------------------------------*/
@@ -701,6 +729,8 @@ bool ESP8266_SmartConfig(void)
   if (cnt == 120)
   {
     printf("\nESP8266_SmartConfig TimeOut \n");
+    while (!ESP8266_SmartConfig_Stop())
+    ;
     return 0;
   }
   // ucSmartConfigStartFlag =1;

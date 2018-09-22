@@ -106,7 +106,7 @@ typedef struct //串口数据帧的处理结构体
 extern UART_HandleTypeDef husartx_esp8266;
 extern STRUCT_USARTx_Frame strEsp8266_Frame_Record;
 extern uint8_t esp8266_rxdata;
-extern uint8_t ucSmartConfigStartFlag;
+extern uint8_t ucSmartConfigFlag;
 
 /* 函数声明 ------------------------------------------------------------------*/
 #ifndef STM32_CUBEMX
